@@ -1,0 +1,14 @@
+---
+title: "Working-doc"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(tidyterra)
+library(sf)
+library(terra)
+unclean.norf <- rast("Data/VA_Southern_GCS_3m_NAVDm.tif")
+bbox <- coords <- c(xmin=-76.389548, xmax=-76.154689, ymin = 36.834249 ,ymax=-76.154689)
+```
+
