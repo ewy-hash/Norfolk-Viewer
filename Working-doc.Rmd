@@ -9,6 +9,13 @@ library(tidyterra)
 library(sf)
 library(terra)
 unclean.norf <- rast("Data/VA_Southern_GCS_3m_NAVDm.tif")
-bbox <- coords <- c(xmin=-76.389548, xmax=-76.154689, ymin = 36.834249 ,ymax=-76.154689)
+bbox <- ext(c(xmin = -76.389548, xmax = -76.154689, ymin = 36.834249, ymax = 36.971082))
+unclean.norf.masked <- mask(unclean.norf, bbox, )
+unclean.norf.trimmed <- trim(unclean.norf.masked)
+plot(unclean.norf.trimmed)
+writeRaster(unclean.norf.trimmed, "Data/unclean-norf-trimmed.tif", overwrite = TRUE)
+ggplot()+
+  geom_spatraster(data = unclean.norf.masked)
+
 ```
 
