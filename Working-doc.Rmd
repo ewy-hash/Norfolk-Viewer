@@ -28,4 +28,6 @@ plot(unclean.norf.trimmed.filtered)
 
 
 #im thinking we can use this functino from terra called sieve() to filter the unconnected low-lying areas and make them a different color or also more likely the function terra::patches() !!!!!
+
+#then we can overlay that one as a mask onto the first one to get just the NOT hydrologically connected parts,  and then we can put the two together with different colors.
 ```
