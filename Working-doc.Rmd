@@ -17,4 +17,10 @@ writeRaster(unclean.norf.trimmed, "Data/unclean-norf-trimmed.tif", overwrite = T
 ggplot()+
   geom_spatraster(data = unclean.norf.trimmed)
 ggsave(filename = "norfolk-initial.png", path = "Plots/")
+
+
+#this is to filter for certain elevations. needs to be re ran each change.
+unclean.norf.trimmed.filtered <- unclean.norf.trimmed
+unclean.norf.trimmed.filtered[unclean.norf.trimmed.filtered >= 3] <- NA #change this for different elevations)
+plot(unclean.norf.trimmed.filtered)
 ```
