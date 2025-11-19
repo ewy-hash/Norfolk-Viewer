@@ -15,7 +15,6 @@ unclean.norf.trimmed <- trim(unclean.norf.masked)
 plot(unclean.norf.trimmed)
 writeRaster(unclean.norf.trimmed, "Data/unclean-norf-trimmed.tif", overwrite = TRUE)
 ggplot()+
-  geom_spatraster(data = unclean.norf.masked)
-
+  geom_spatraster(data = unclean.norf.trimmed)
+ggsave(filename = "norfolk-initial.png", path = "Plots/")
 ```
-
