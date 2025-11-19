@@ -21,6 +21,11 @@ ggsave(filename = "norfolk-initial.png", path = "Plots/")
 
 #this is to filter for certain elevations. needs to be re ran each change.
 unclean.norf.trimmed.filtered <- unclean.norf.trimmed
-unclean.norf.trimmed.filtered[unclean.norf.trimmed.filtered >= 3] <- NA #change this for different elevations)
+unclean.norf.trimmed.filtered[unclean.norf.trimmed.filtered >= 2] <- NA #change this
+#for different elevations, not sure what unit it is yet
 plot(unclean.norf.trimmed.filtered)
+
+
+
+#im thinking we can use this functino from terra called sieve() to filter the unconnected low-lying areas and make them a different color or also more likely the function terra::patches() !!!!!
 ```
