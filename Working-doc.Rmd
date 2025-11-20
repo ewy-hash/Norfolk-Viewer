@@ -21,7 +21,7 @@ ggsave(filename = "norfolk-initial.png", path = "Plots/")
 
 #this is to filter for certain elevations. needs to be re ran each change.
 unclean.norf.trimmed.filtered <- unclean.norf.trimmed
-unclean.norf.trimmed.filtered[unclean.norf.trimmed.filtered >= 2] <- NA #change this
+unclean.norf.trimmed.filtered[unclean.norf.trimmed.filtered >= 1] <- NA #change this
 #for different elevations, not sure what unit it is yet
 plot(unclean.norf.trimmed.filtered)
 
@@ -30,4 +30,43 @@ plot(unclean.norf.trimmed.filtered)
 #im thinking we can use this functino from terra called sieve() to filter the unconnected low-lying areas and make them a different color or also more likely the function terra::patches() !!!!!
 
 #then we can overlay that one as a mask onto the first one to get just the NOT hydrologically connected parts,  and then we can put the two together with different colors.
+
+norf.patches.test <- patches(unclean.norf.trimmed.filtered, 
+                             directions = 8, 
+                             values = FALSE, 
+                             zeroAsNA=FALSE)
+
+plot(norf.patches.test)
+#ok so we can wsee it plotted each patch assigning a different number, now need to find the lowest number or the largest patch
+
+freq(norf.patches.test)
+#from this we can see the layer 1, value one, have the most. So this is the 
+#hydrologically connected. Now need to isolate just this layer/value of 1
+
+# soooooo maybe set all the other layers to na
+
+biggest.patch.elev.1 <- norf.patches.test
+biggest.patch.elev.1[biggest.patch.elev.1 != 1] <- NA
+
+
+#soo this one shows all the connected areas that will flood for elevaction of 1
+#still need to find units for this BTW but I think its meters
+plot(biggest.patch.elev.1)
+
+
+#now to mask to get the unconnected areas
+
+other.patches.elev.1 <- mask(norf.patches.test, biggest.patch.elev.1, inverse=TRUE)
+plot(other.patches.elev.1)
+
+# now setting this one to have the same value of like 50 for plotting PURPOSES
+
+other.patches.elev.1.uniform <- other.patches.elev.1
+other.patches.elev.1.uniform[!is.na(other.patches.elev.1.uniform)] <- 50
+plot(other.patches.elev.1.uniform)
+
+
+
+combined.elev.1 <- merge(other.patches.elev.1.uniform, biggest.patch.elev.1)
+plot(combined.elev.1)
 ```
