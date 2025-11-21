@@ -24,7 +24,9 @@ unclean.norf.trimmed.filtered <- unclean.norf.trimmed
 unclean.norf.trimmed.filtered[unclean.norf.trimmed.filtered >= 1] <- NA #change this
 #for different elevations, not sure what unit it is yet
 plot(unclean.norf.trimmed.filtered)
-
+ggplot()+
+  geom_spatraster(data = unclean.norf.trimmed.filtered)
+ggsave(filename = "norfolk-filtered.png", path = "Plots/")
 
 
 #im thinking we can use this functino from terra called sieve() to filter the unconnected low-lying areas and make them a different color or also more likely the function terra::patches() !!!!!
@@ -35,8 +37,15 @@ norf.patches.test <- patches(unclean.norf.trimmed.filtered,
                              directions = 8, 
                              values = FALSE, 
                              zeroAsNA=FALSE)
+#this takes hellllaaaa long btw
+
+
 
 plot(norf.patches.test)
+ggplot()+
+  geom_spatraster(data = norf.patches.test)+
+  scale_fill_gradientn(colors = c("darkblue", "green", "yellow"))
+ggsave(filename = "norfolk-patches.png", path = "Plots/")
 #ok so we can wsee it plotted each patch assigning a different number, now need to find the lowest number or the largest patch
 
 freq(norf.patches.test)
@@ -44,6 +53,7 @@ freq(norf.patches.test)
 #hydrologically connected. Now need to isolate just this layer/value of 1
 
 # soooooo maybe set all the other layers to na
+# can probably also use max()
 
 biggest.patch.elev.1 <- norf.patches.test
 biggest.patch.elev.1[biggest.patch.elev.1 != 1] <- NA
@@ -69,4 +79,9 @@ plot(other.patches.elev.1.uniform)
 
 combined.elev.1 <- merge(other.patches.elev.1.uniform, biggest.patch.elev.1)
 plot(combined.elev.1)
+ggplot()+
+  geom_spatraster(data = combined.elev.1)+
+  scale_fill_gradient(low = "skyblue", high = "yellow")
+ggsave(filename = "norfolk-elev-1.png", path = "Plots/")
+  
 ```
