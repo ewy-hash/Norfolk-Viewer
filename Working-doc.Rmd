@@ -18,7 +18,12 @@ ggplot()+
   geom_spatraster(data = unclean.norf.trimmed)
 ggsave(filename = "norfolk-initial.png", path = "Plots/")
 
-
+#creating a one with less resolution for usein the app
+  raster.small <- terra::aggregate(unclean.norf.trimmed, fact = 3)
+  plot(raster.small)
+  writeRaster(raster.small, "Data/raster-small.tif")
+  
+  
 #this is to filter for certain elevations. needs to be re ran each change.
 unclean.norf.trimmed.filtered <- unclean.norf.trimmed
 unclean.norf.trimmed.filtered[unclean.norf.trimmed.filtered >= 1] <- NA #change this
@@ -85,5 +90,6 @@ ggplot()+
 ggsave(filename = "norfolk-elev-1.png", path = "Plots/")
 
 ###also I think for the shiny app, we could use sieve() and patches() to create .tifs for each increment of elevation, in like a big DF to plot easier idk
-  
+
+
 ```

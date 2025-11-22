@@ -13,6 +13,7 @@ library(tidyterra)
 library(sf)
 library(terra)
 
+
 # Define UI for application that draws a plot
 ui <- fluidPage(
   
@@ -36,6 +37,10 @@ ui <- fluidPage(
     )
   )
 )
+unclean.norf.trimmed <- rast("../Data/raster-small.tif")
+
+#I put this part outside so it would run only once
+
 
 # Define server logic required to draw a spatraster plot
 server <- function(input, output) {
@@ -49,7 +54,6 @@ server <- function(input, output) {
       #bbox <- ext(c(xmin = -76.389548, xmax = -76.154689, ymin = 36.834249, ymax = 36.971082))
       #unclean.norf.masked <- mask(unclean.norf, bbox, )
       #unclean.norf.trimmed <- trim(unclean.norf.masked)
-      unclean.norf.trimmed <- rast("../Data/unclean-norf-trimmed.tif")
       unclean.norf.trimmed.filtered <- unclean.norf.trimmed
       unclean.norf.trimmed.filtered[unclean.norf.trimmed.filtered >= input$elev] <- NA
       #set the elev set by user to the map I thinkkkkk/hopeeee
