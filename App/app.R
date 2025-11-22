@@ -8,43 +8,76 @@
 #
 
 library(shiny)
+library(tidyverse)
+library(tidyterra)
+library(sf)
+library(terra)
 
-# Define UI for application that draws a histogram
+# Define UI for application that draws a plot
 ui <- fluidPage(
-
-    # Application title
-    titlePanel("Old Faithful Geyser Data"),
-
-    # Sidebar with a slider input for number of bins 
-    sidebarLayout(
-        sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
-        ),
-
-        # Show a plot of the generated distribution
-        mainPanel(
-           plotOutput("distPlot")
-        )
+  
+  # Application title
+  titlePanel("Flood Hazard Map Norfolk"),
+  
+  # Sidebar with a slider input for tide height 
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput("elev",
+                  "Tide Height (m)",
+                  min = 0,
+                  max = 3,
+                  value = 0,
+                  step = 0.25)
+    ),
+    
+    # Show a plot of the data
+    mainPanel(
+      plotOutput("spatPlot")
     )
+  )
 )
 
-# Define server logic required to draw a histogram
+# Define server logic required to draw a spatraster plot
 server <- function(input, output) {
-
-    output$distPlot <- renderPlot({
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white',
-             xlab = 'Waiting time to next eruption (in mins)',
-             main = 'Histogram of waiting times')
+  
+  output$spatPlot <- renderPlot({
+    withProgress(message = "plotting", {
+      #this is just from the working doc
+      
+      ##dont need to use these since We saved the filtered file
+      #unclean.norf <- rast("../Data/VA_Southern_GCS_3m_NAVDm.tif")
+      #bbox <- ext(c(xmin = -76.389548, xmax = -76.154689, ymin = 36.834249, ymax = 36.971082))
+      #unclean.norf.masked <- mask(unclean.norf, bbox, )
+      #unclean.norf.trimmed <- trim(unclean.norf.masked)
+      unclean.norf.trimmed <- rast("../Data/unclean-norf-trimmed.tif")
+      unclean.norf.trimmed.filtered <- unclean.norf.trimmed
+      unclean.norf.trimmed.filtered[unclean.norf.trimmed.filtered >= input$elev] <- NA
+      #set the elev set by user to the map I thinkkkkk/hopeeee
+      
+      norf.patches.test <- patches(unclean.norf.trimmed.filtered, 
+                                   directions = 8, 
+                                   values = FALSE, 
+                                   zeroAsNA=FALSE)
+      
+      biggest.patch.elev.1 <- norf.patches.test
+      biggest.patch.elev.1[biggest.patch.elev.1 != 1] <- NA
+      
+      other.patches.elev.1 <- mask(norf.patches.test, biggest.patch.elev.1, inverse=TRUE)
+      
+      other.patches.elev.1.uniform <- other.patches.elev.1
+      other.patches.elev.1.uniform[!is.na(other.patches.elev.1.uniform)] <- 50
+      
+      combined.elev.1 <- merge(other.patches.elev.1.uniform, biggest.patch.elev.1)
     })
+      ggplot()+
+        geom_spatraster(data = combined.elev.1)+
+        scale_fill_gradient(low = "skyblue", high = "yellow")+
+        theme(
+          plot.background  = element_rect(fill = "white", color = NA),
+          panel.background = element_rect(fill = "white", color = NA)
+        )
+    
+  })
 }
 
 # Run the application 

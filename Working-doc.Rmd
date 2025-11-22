@@ -10,7 +10,7 @@ library(sf)
 library(terra)
 unclean.norf <- rast("Data/VA_Southern_GCS_3m_NAVDm.tif")
 bbox <- ext(c(xmin = -76.389548, xmax = -76.154689, ymin = 36.834249, ymax = 36.971082))
-unclean.norf.masked <- mask(unclean.norf, bbox, )
+unclean.norf.masked <- mask(unclean.norf, bbox)
 unclean.norf.trimmed <- trim(unclean.norf.masked)
 plot(unclean.norf.trimmed)
 writeRaster(unclean.norf.trimmed, "Data/unclean-norf-trimmed.tif", overwrite = TRUE)
@@ -83,5 +83,7 @@ ggplot()+
   geom_spatraster(data = combined.elev.1)+
   scale_fill_gradient(low = "skyblue", high = "yellow")
 ggsave(filename = "norfolk-elev-1.png", path = "Plots/")
+
+###also I think for the shiny app, we could use sieve() and patches() to create .tifs for each increment of elevation, in like a big DF to plot easier idk
   
 ```
