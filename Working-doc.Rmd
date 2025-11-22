@@ -8,6 +8,13 @@ library(tidyverse)
 library(tidyterra)
 library(sf)
 library(terra)
+#library(maps)
+#library(ggmap)
+library(osmdata)
+
+
+
+
 unclean.norf <- rast("Data/VA_Southern_GCS_3m_NAVDm.tif")
 bbox <- ext(c(xmin = -76.389548, xmax = -76.154689, ymin = 36.834249, ymax = 36.971082))
 unclean.norf.masked <- mask(unclean.norf, bbox)
@@ -90,6 +97,46 @@ ggplot()+
 ggsave(filename = "norfolk-elev-1.png", path = "Plots/")
 
 ###also I think for the shiny app, we could use sieve() and patches() to create .tifs for each increment of elevation, in like a big DF to plot easier idk
+
+
+## now im tryna get the basemap to put under spatraster data
+# crs(combined.elev.1)
+# 
+# 
+# counties.map <- maps::map("county", plot = FALSE, fill = TRUE)
+# 
+# 
+# counties.map <- st_as_sf(counties.map, crs = 4269)
+# 
+# ggplot()+
+#   geom_spatraster(data = combined.elev.1)+
+#   scale_fill_gradient(low = "skyblue", high = "yellow")+
+#   geom_sf(data = counties.map, fill = NA)+
+#   coord_sf(
+#     xlim = c(-76.389548, -76.154689),
+#     ylim = c(36.834249, 36.971082))
+
+#not very persice lowk so maybe ill give up on that. Should porbably get a good basemap from somewhere else
+
+
+#now trying pacakge ggmap
+
+# norfolk.basemap <- get_map(location = "norfolk, virginia", maptype = "roadmap")
+#                              
+# 
+# 
+# counties.map <- st_as_sf(counties.map, crs = 4269)
+# 
+# ggplot()+
+#   geom_spatraster(data = combined.elev.1)+
+#   scale_fill_gradient(low = "skyblue", high = "yellow")+
+#   geom_sf(data = counties.map, fill = NA)+
+#   coord_sf(
+#     xlim = c(-76.389548, -76.154689),
+#     ylim = c(36.834249, 36.971082))
+#apparently you need api key for ts
+
+# now will try OSM maps/????
 
 
 ```
