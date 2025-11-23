@@ -14,9 +14,11 @@ library(osmdata)
 
 
 
+##36.83957, -76.25027
+
 
 unclean.norf <- rast("Data/VA_Southern_GCS_3m_NAVDm.tif")
-bbox <- ext(c(xmin = -76.389548, xmax = -76.154689, ymin = 36.834249, ymax = 36.971082))
+bbox <- ext(c(xmin = -76.389548, xmax = -76.256, ymin = 36.87, ymax = 36.971082))
 unclean.norf.masked <- mask(unclean.norf, bbox)
 unclean.norf.trimmed <- trim(unclean.norf.masked)
 plot(unclean.norf.trimmed)
@@ -25,10 +27,13 @@ ggplot()+
   geom_spatraster(data = unclean.norf.trimmed)
 ggsave(filename = "norfolk-initial.png", path = "Plots/")
 
+
+
+
 #creating a one with less resolution for usein the app
-  raster.small <- terra::aggregate(unclean.norf.trimmed, fact = 3)
+  raster.small5 <- terra::aggregate(unclean.norf.trimmed, fact = 5)
   plot(raster.small)
-  writeRaster(raster.small, "Data/raster-small.tif")
+  writeRaster(raster.small5, "Data/raster-small5.tif", overwrite = TRUE)
   
   
 #this is to filter for certain elevations. needs to be re ran each change.

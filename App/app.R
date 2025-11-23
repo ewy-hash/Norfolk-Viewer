@@ -37,7 +37,7 @@ ui <- fluidPage(
     )
   )
 )
-unclean.norf.trimmed <- rast("../Data/raster-small.tif")
+unclean.norf.trimmed <- rast("../Data/raster-small5.tif")
 
 #I put this part outside so it would run only once
 
