@@ -10,7 +10,7 @@ library(sf)
 library(terra)
 #library(maps)
 #library(ggmap)
-library(osmdata)
+#library(osmdata)
 
 
 
@@ -142,6 +142,25 @@ ggsave(filename = "norfolk-elev-1.png", path = "Plots/")
 #apparently you need api key for ts
 
 # now will try OSM maps/????
+```
+
+
+```{r}
+#Trying to figrue out merging a raster shp file with street data with DEM file
+library(terra)
+library(sf)
+install.packages("tigris")
+library(tigris)
+#created a road map of noroflk
+norfolk_roads <- roads(state = "VA", county = "Norfolk")
+
+# Saving shapefile
+st_write(norfolk_roads, "norfolk_roads.shp", delete_dsn = TRUE)
+
+plot(norfolk_roads$geometry)
+norfolk_roads$FULLNAME
+
+
 
 
 ```
