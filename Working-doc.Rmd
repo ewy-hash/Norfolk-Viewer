@@ -161,6 +161,13 @@ plot(norfolk_roads$geometry)
 norfolk_roads$FULLNAME
 
 
-
+ggplot()+
+   geom_spatraster(data = combined.elev.1)+
+        scale_fill_gradient(low = "skyblue", high = "yellow")+
+        theme(
+          plot.background  = element_rect(fill = "white", color = NA),
+          panel.background = element_rect(fill = "white", color = NA)
+        )+
+  geom_sf(data = norfolk_roads, mapping = aes())
 
 ```
