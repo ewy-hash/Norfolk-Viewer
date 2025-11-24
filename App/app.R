@@ -87,7 +87,7 @@ server <- function(input, output) {
     })
       ggplot()+
         geom_spatraster(data = combined.elev.1)+
-        scale_fill_gradient2(low = "darkmagenta", high = "yellow", mid = "steelblue")+
+        scale_fill_gradient2(low = "darkmagenta", high = "yellow", mid = "steelblue", midpoint = 1)+
         theme(
           plot.background  = element_rect(fill = "white", color = NA),
           panel.background = element_rect(fill = "white", color = NA)
