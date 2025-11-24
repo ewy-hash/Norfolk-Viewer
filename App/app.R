@@ -39,6 +39,16 @@ ui <- fluidPage(
 )
 unclean.norf.trimmed <- rast("../Data/raster-small5.tif")
 
+ocean <- unclean.norf.trimmed
+ocean[ocean >= -90] <- NA
+
+plot(mask(unclean.norf.trimmed, ocean, inverse = TRUE))
+ocean.patches <-patches(ocean)
+ocean.patch <- ocean.patches
+ocean.patch[ocean.patch != 1] <- NA
+ocean.patch[ocean.patch == 1] <- -99
+
+plot(ocean.patch)
 #I put this part outside so it would run only once
 
 
@@ -72,10 +82,12 @@ server <- function(input, output) {
       other.patches.elev.1.uniform[!is.na(other.patches.elev.1.uniform)] <- 50
       
       combined.elev.1 <- merge(other.patches.elev.1.uniform, biggest.patch.elev.1)
+      combined.elev.1 <- merge(ocean.patch, combined.elev.1)
+      
     })
       ggplot()+
         geom_spatraster(data = combined.elev.1)+
-        scale_fill_gradient(low = "skyblue", high = "yellow")+
+        scale_fill_gradient2(low = "darkmagenta", high = "yellow", mid = "steelblue")+
         theme(
           plot.background  = element_rect(fill = "white", color = NA),
           panel.background = element_rect(fill = "white", color = NA)
