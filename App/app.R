@@ -12,6 +12,7 @@ library(tidyverse)
 library(tidyterra)
 library(sf)
 library(terra)
+library(tigris)
 
 
 # Define UI for application that draws a plot
@@ -27,16 +28,20 @@ ui <- fluidPage(
                   "Tide Height (m)",
                   min = 0,
                   max = 3,
-                  value = 0,
+                  value = 1,
                   step = 0.25)
     ),
     
     # Show a plot of the data
     mainPanel(
+      width = 12,
       plotOutput("spatPlot")
     )
   )
 )
+
+
+### stuff to be done before running server, getting smaller raster data
 unclean.norf.trimmed <- rast("../Data/raster-small5.tif")
 
 ocean <- unclean.norf.trimmed
@@ -48,7 +53,14 @@ ocean.patch <- ocean.patches
 ocean.patch[ocean.patch != 1] <- NA
 ocean.patch[ocean.patch == 1] <- -99
 
-plot(ocean.patch)
+
+
+norfolk_roads <- roads(state = "VA", county = "Norfolk")
+hampton_roads <- roads(state = "VA", county = "Hampton")
+portsmouth_roads <- roads(state = "VA", county = "Portsmouth")
+
+
+
 #I put this part outside so it would run only once
 
 
@@ -87,11 +99,21 @@ server <- function(input, output) {
     })
       ggplot()+
         geom_spatraster(data = combined.elev.1)+
-        scale_fill_gradient2(low = "darkmagenta", high = "yellow", mid = "steelblue", midpoint = 1)+
+        scale_fill_gradient2(low = "darkblue", 
+                             high = "red",
+                             mid = "steelblue", 
+                             midpoint = 0, 
+                             na.value = "grey50")+
         theme(
           plot.background  = element_rect(fill = "white", color = NA),
           panel.background = element_rect(fill = "white", color = NA)
-        )
+        )+
+        geom_sf(data = norfolk_roads, mapping = aes(), color=alpha("grey20",0.2))+
+        geom_sf(data = portsmouth_roads, mapping = aes(), color=alpha("grey20",0.2))+
+        geom_sf(data = hampton_roads, mapping = aes(), color=alpha("grey20",0.2))+
+        coord_sf(
+              xlim = c(-76.389548, -76.256),
+              ylim = c(36.87, 36.971082))
     
   })
 }
