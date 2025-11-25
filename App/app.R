@@ -54,12 +54,12 @@ ocean.patch[ocean.patch != 1] <- NA
 ocean.patch[ocean.patch == 1] <- -99
 
 
-
+#these are the road polygons to be added in
 norfolk_roads <- roads(state = "VA", county = "Norfolk")
 hampton_roads <- roads(state = "VA", county = "Hampton")
 portsmouth_roads <- roads(state = "VA", county = "Portsmouth")
 
-
+##this is for getting the weird chunk out of the spatraster
 
 #I put this part outside so it would run only once
 
