@@ -15,6 +15,7 @@ library(terra)
 library(tigris)
 
 
+
 # Define UI for application that draws a plot
 ui <- fluidPage(
   
@@ -43,8 +44,12 @@ ui <- fluidPage(
 
 ### stuff to be done before running server, getting smaller raster data
 unclean.norf.trimmed <- rast("../Data/raster-small5.tif")
+unclean.norf.trimmed[is.na(unclean.norf.trimmed)] <- -99
+
 
 ocean <- unclean.norf.trimmed
+
+#there were some weird NA values in the top left corner that this fixes
 ocean[ocean >= -90] <- NA
 
 plot(mask(unclean.norf.trimmed, ocean, inverse = TRUE))
