@@ -173,3 +173,11 @@ ggplot()+
   geom_sf(data = norfolk_roads, mapping = aes())
 
 ```
+
+
+```{r}
+# data set link to coverage — https://wu-next-prod.wunderground.com/article/forecast/regional/news/2025-10-08-noreaster-coastal-storm-forecast-wind-flooding-october#:~:text=In%20Virginia%2C%20coastal%20flooding%20was,of%20our%20parent%20company%2C%20IBM.
+# 2025 Oct 09 - 2025 Oct 13
+sample.set <- "Data/Tide_Sensors_20251128.csv"
+```
+
