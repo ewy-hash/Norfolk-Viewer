@@ -15,7 +15,11 @@ library(tigris)
 #install.packages("leaflet")
 library(leaflet)
 library(shiny)
-
+tide.input <- read_csv("Data/Tide_Sensors_20251128.csv")
+tide.input.clean <- tide.input |> 
+  mutate(`Little Creek at 20th Bay St`= NULL) |> 
+  mutate(`Elizabeth River Main Branch at Nauticus`= NULL) |> 
+  drop_na()
 # Define UI for application that draws a histogram
 ui <- fluidPage(
       
@@ -63,13 +67,25 @@ norfolk_roads <- roads(state = "VA", county = "Norfolk")
 hampton_roads <- roads(state = "VA", county = "Hampton")
 portsmouth_roads <- roads(state = "VA", county = "Portsmouth")
 
+min_lng <- -76.389548
+min_lat <- 36.971082
+max_lng <- -76.256
+max_lat <- 36.87
 
+center_lng <- (min_lng + max_lng) / 2
+center_lat <- (min_lat + max_lat) / 2
+initial_zoom <- 12.4999999
 server <- function(input, output) {
 
     output$norfPlot <- renderLeaflet({
-      leaflet() %>% 
-        addProviderTiles(providers$CartoDB.Positron) %>%
-        setView(lat = 36.919, lng = -76.327, zoom = 12)
+      leaflet() |> 
+        addProviderTiles(providers$CartoDB.Positron) |> 
+        setView(lng = center_lng, lat = center_lat, zoom = initial_zoom) |> 
+                  setMaxBounds(
+                    lng1 = min_lng, lat1 = min_lat, 
+                    lng2 = max_lng, lat2 = max_lat)
+      #iterated. abunch here to try an dbring the box in, alas, to no avail
+        
       
     #this above line is super imporantnt, it makes the basemano
         })
