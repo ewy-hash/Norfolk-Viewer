@@ -42,7 +42,7 @@ ui <- fluidPage(
     )
 
 #not running again, need to read all this shit in again!!!!#####
-unclean.norf.trimmed <- rast("../Data/raster-small5.tif")
+unclean.norf.trimmed <- rast("Data/raster-small5.tif")
 unclean.norf.trimmed[is.na(unclean.norf.trimmed)] <- -99
 
 
@@ -63,17 +63,27 @@ norfolk_roads <- roads(state = "VA", county = "Norfolk")
 hampton_roads <- roads(state = "VA", county = "Hampton")
 portsmouth_roads <- roads(state = "VA", county = "Portsmouth")
 
-# Define server logic required to draw a histogram
+
 server <- function(input, output) {
 
     output$norfPlot <- renderLeaflet({
-      withProgress(message = "plotting", {
-      unclean.norf.trimmed.filtered <- unclean.norf.trimmed
-      unclean.norf.trimmed.filtered[unclean.norf.trimmed.filtered >= input$elev] <- NA
-      #set the elev set by user to the map I thinkkkkk/hopeeee
+      leaflet() %>% addProviderTiles(providers$CartoDB.Positron)
+    
+        })
       
-      norf.patches.test <- patches(unclean.norf.trimmed.filtered, 
-                                   directions = 8, 
+      #apparently observe makes it update each time a value changes?
+      observe({
+      withProgress(message = "plotting", {
+        
+        #getting the raster for that tide height 
+        unclean.norf.trimmed.filtered <- unclean.norf.trimmed
+        unclean.norf.trimmed.filtered[unclean.norf.trimmed.filtered >= input$elev] <- NA
+        #sets the elev set by user to the map I thinkkkkk/hopeeee
+        
+        
+        #now to make the patches
+        norf.patches.test <- patches(unclean.norf.trimmed.filtered, 
+                                     directions = 8, 
                                    values = FALSE, 
                                    zeroAsNA=FALSE)
       
@@ -88,23 +98,24 @@ server <- function(input, output) {
       combined.elev.1 <- merge(other.patches.elev.1.uniform, biggest.patch.elev.1)
       combined.elev.1 <- merge(ocean.patch, combined.elev.1)
       
+      
+      #now to make the leaflet proxy, which is needed because the map needs to update every slider input
+      leafletProxy("norfPlot") %>%
+        addRasterImage(combined.elev.1)
+        
     })
-    ggplot()+
-      geom_spatraster(data = combined.elev.1)+
-      scale_fill_gradient2(low = "darkblue", 
-                           high = "red",
-                           mid = "steelblue", 
-                           midpoint = 0, 
-                           na.value = "grey50")+
-      theme(
-        plot.background  = element_rect(fill = "white", color = NA),
-        panel.background = element_rect(fill = "white", color = NA)
-      )+
-      leaflet() |> 
+    # ggplot()+
+    #   geom_spatraster(data = combined.elev.1)+
+    #   scale_fill_gradient2(low = "darkblue", 
+    #                        high = "red",
+    #                        mid = "steelblue", 
+    #                        midpoint = 0, 
+    #                        na.value = "grey50")+
+    #   theme(
+    #     plot.background  = element_rect(fill = "white", color = NA),
+    #     panel.background = element_rect(fill = "white", color = NA)
+    #   )+
         
-        addTiles()
-        
-        # generate bins based on input$bins from ui.R
        
 
         
