@@ -67,8 +67,11 @@ portsmouth_roads <- roads(state = "VA", county = "Portsmouth")
 server <- function(input, output) {
 
     output$norfPlot <- renderLeaflet({
-      leaflet() %>% addProviderTiles(providers$CartoDB.Positron)
-    
+      leaflet() %>% 
+        addProviderTiles(providers$CartoDB.Positron) %>%
+        setView(lat = 36.919, lng = -76.327, zoom = 12)
+      
+    #this above line is super imporantnt, it makes the basemano
         })
       
       #apparently observe makes it update each time a value changes?
@@ -101,7 +104,7 @@ server <- function(input, output) {
       
       #now to make the leaflet proxy, which is needed because the map needs to update every slider input
       leafletProxy("norfPlot") %>%
-        addRasterImage(combined.elev.1)
+        addRasterImage(combined.elev.1, opacity = 0.7)
         
     })
     # ggplot()+
