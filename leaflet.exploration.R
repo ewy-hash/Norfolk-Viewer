@@ -68,9 +68,9 @@ hampton_roads <- roads(state = "VA", county = "Hampton")
 portsmouth_roads <- roads(state = "VA", county = "Portsmouth")
 
 min_lng <- -76.389548
-min_lat <- 36.971082
+max_lat <- 36.971082
 max_lng <- -76.256
-max_lat <- 36.87
+min_lat <- 36.87
 
 center_lng <- (min_lng + max_lng) / 2
 center_lat <- (min_lat + max_lat) / 2
@@ -120,6 +120,7 @@ server <- function(input, output) {
       
       #now to make the leaflet proxy, which is needed because the map needs to update every slider input
       leafletProxy("norfPlot") %>%
+        clearImages() %>%
         addRasterImage(combined.elev.1, opacity = 0.7)
         
     })
