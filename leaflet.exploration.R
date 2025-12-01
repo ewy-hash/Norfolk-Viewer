@@ -20,7 +20,7 @@ tide.input.clean <- tide.input |>
   mutate(`Little Creek at 20th Bay St`= NULL) |> 
   mutate(`Elizabeth River Main Branch at Nauticus`= NULL) |> 
   drop_na() |> 
-  mutate(useful.date = as.POSIXct(LocalTime, format = "%Y %b %d %H:%M:%S"))
+  mutate(useful.date = as.POSIXct(LocalTime, format = "%Y %b %d %I:%M:%S %p"))
 
 # Define UI for application that 
 ui <- fluidPage(
@@ -30,7 +30,22 @@ ui <- fluidPage(
       
       # Sidebar with a slider input for tide height 
       sidebarLayout(
-        sidebarPanel( sliderInput(tide.input.clean, "Storm Surge")
+        sidebarPanel( sliderInput(inputId = "date", 
+                     label = "Noreaster Surge",
+                      min = min(tide.input.clean$useful.date),
+                      max = max(tide.input.clean$useful.date),
+                      value = min(tide.input.clean$useful.date),
+                      step = 3600,
+                     timeFormat = "%Y %b %d %H:%M:%S"), 
+      sidebarPanel( #sliderInput(tide.input.clean, "Storm Surge")
+          selectInput(inputId = "sensor",
+                      label = "Sensor",
+                      choices = c("Elizabeth River Eastern Branch at Grandy Village", 
+                                  "Lafayette River at Mayflower Rd",
+                                  "Mason Creek at Granby St"),
+                      selected = "1",
+                      multiple = FALSE)
+                      )
           # sliderInput("elev",
           #             "Tide Height (m)",
           #             min = 0,
@@ -77,6 +92,10 @@ min_lat <- 36.87
 center_lng <- (min_lng + max_lng) / 2
 center_lat <- (min_lat + max_lat) / 2
 initial_zoom <- 12.4999999
+
+
+
+
 server <- function(input, output) {
 
     output$norfPlot <- renderLeaflet({
@@ -96,9 +115,17 @@ server <- function(input, output) {
       observe({
       withProgress(message = "plotting", {
         
+        #determining height for gauge and time
+        gauge.height <- tide.input.clean |> 
+          select(useful.date, input$sensor) |> 
+          filter(useful.date == input$date) |> 
+          pull(input$sensor)
+        
+        
         #getting the raster for that tide height 
         unclean.norf.trimmed.filtered <- unclean.norf.trimmed
-        unclean.norf.trimmed.filtered[unclean.norf.trimmed.filtered >= input$elev] <- NA
+        unclean.norf.trimmed.filtered[unclean.norf.trimmed.filtered >= gauge.height] <- NA
+        
         #sets the elev set by user to the map I thinkkkkk/hopeeee
         
         
