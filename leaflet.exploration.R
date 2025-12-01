@@ -19,8 +19,10 @@ tide.input <- read_csv("Data/Tide_Sensors_20251128.csv")
 tide.input.clean <- tide.input |> 
   mutate(`Little Creek at 20th Bay St`= NULL) |> 
   mutate(`Elizabeth River Main Branch at Nauticus`= NULL) |> 
-  drop_na()
-# Define UI for application that draws a histogram
+  drop_na() |> 
+  mutate(useful.date = as.POSIXct(LocalTime, format = "%Y %b %d %H:%M:%S"))
+
+# Define UI for application that 
 ui <- fluidPage(
       
       # Application title
@@ -28,18 +30,18 @@ ui <- fluidPage(
       
       # Sidebar with a slider input for tide height 
       sidebarLayout(
-        sidebarPanel(
-          sliderInput("elev",
-                      "Tide Height (m)",
-                      min = 0,
-                      max = 3,
-                      value = 1,
-                      step = 0.25)
+        sidebarPanel( sliderInput(tide.input.clean, "Storm Surge")
+          # sliderInput("elev",
+          #             "Tide Height (m)",
+          #             min = 0,
+          #             max = 3,
+          #             value = 1,
+          #             step = 0.25)
         ),
         
         # Show a plot of the data
         mainPanel(
-          width = 12,
+          width = 8,
           leafletOutput(outputId = "norfPlot")
         )
       )
