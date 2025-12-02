@@ -50,23 +50,29 @@ ui <- fluidPage(
                                   "Mason Creek at Granby St"),
                       selected = "1",
                       multiple = FALSE,
-                      width= '250')
-                      )
-          # sliderInput("elev",
-          #             "Tide Height (m)",
-          #             min = 0,
-          #             max = 3,
-          #             value = 1,
-          #             step = 0.25)
-        ),
-        
+                      width= '250%')
+                      )),
         # Show a plot of the data
         mainPanel(
           width = 8,
-          leafletOutput(outputId = "norfPlot")
-        )
+          leafletOutput(outputId = "norfPlot"),
+      #tiny panes
+      conditionalPanel(condition = "input.sensor == 'Elizabeth River Eastern Branch at Grandy Village'",
+                       h3 = "flooding along Elizabeth River",
+                       plotOutput("elizaPlot"),
+                       conditionalPanel(
+                         condition = "input.sensor == 'Lafayette River at Mayflower Rd'",
+                         h3("Flooding along Lafayette River"),
+                         plotOutput("layfPlot")
+                       ),
+                       
+                       conditionalPanel(
+                         condition = "input.sensor == 'Mason Creek at Granby St'",
+                         h3("Flooding along Mason Creek"),
+                         plotOutput("masPlot")
+  
       )
-    )
+    ))))
 
 #not running again, need to read all this shit in again!!!!#####
 unclean.norf.trimmed <- rast("Data/raster-small5.tif")
@@ -89,11 +95,11 @@ ocean.patch[ocean.patch == 1] <- -99
 norfolk_roads <- roads(state = "VA", county = "Norfolk")
 hampton_roads <- roads(state = "VA", county = "Hampton")
 portsmouth_roads <- roads(state = "VA", county = "Portsmouth")
-
-min_lng <- -76.389548
-max_lat <- 36.971082
-max_lng <- -76.256
-min_lat <- 36.87
+#whole map = [1], elizabeth = [2], lafayette = [3], mason creek =[4] thought this would make easier??
+min_lng <- c(-76.389548, -76.334227, -76.33, -76.28)
+max_lat <- c(36.971082, 36.867939, 36.92, 36.949)
+max_lng <- c(-76.256, -76.256, -76.256, -76.256)
+min_lat <- c(36.87, 36.835001, 36.87, 36.923)
 
 center_lng <- (min_lng + max_lng) / 2
 center_lat <- (min_lat + max_lat) / 2
@@ -107,15 +113,32 @@ server <- function(input, output) {
     output$norfPlot <- renderLeaflet({
       leaflet() |> 
         addProviderTiles(providers$CartoDB.Positron) |> 
-        setView(lng = center_lng, lat = center_lat, zoom = initial_zoom) |> 
+        setView(lng = center_lng[1], lat = center_lat[1], zoom = initial_zoom) |> 
                   setMaxBounds(
                     lng1 = min_lng, lat1 = min_lat, 
                     lng2 = max_lng, lat2 = max_lat)
       #iterated. abunch here to try an dbring the box in, alas, to no avail
         
       
-    #this above line is super imporantnt, it makes the basemano
         })
+    #making sub-plots
+    output$elizaPlot <- renderLeaflet({
+      leaflet() |> 
+        setView(center_lng[2], lat = center_lat[2], zoom = initial_zoom)
+    })
+    
+    output$layfPlot <- renderLeaflet({
+      leaflet() |> 
+        setView(lng =center_lng[3], lat = center_lat[3], zoom = initial_zoom)
+    })
+    
+    output$masPlot <- renderLeaflet({
+      leaflet() |> 
+        setView(center_lng[4], lat = center_lat[4], zoom = initial_zoom)
+    })
+    
+    
+
       
       #apparently observe makes it update each time a value changes?
       observe({
