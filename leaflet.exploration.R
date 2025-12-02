@@ -20,7 +20,11 @@ tide.input.clean <- tide.input |>
   mutate(`Little Creek at 20th Bay St`= NULL) |> 
   mutate(`Elizabeth River Main Branch at Nauticus`= NULL) |> 
   drop_na() |> 
-  mutate(useful.date = as.POSIXct(LocalTime, format = "%Y %b %d %I:%M:%S %p"))
+  mutate(useful.date = as.POSIXct(LocalTime, format = "%Y %b %d %I:%M:%S %p")) |> 
+  mutate(Elizabeth.River <- (`Elizabeth River Eastern Branch at Grandy Village`*(1/3.28084))) |> 
+  mutate(Lafayette.River <- ( `Lafayette River at Mayflower Rd`*(1/3.28084))) |> 
+  mutate(Mason.Creek <- (`Mason Creek at Granby St`*(1/3.28084)))
+
 
 # Define UI for application that 
 ui <- fluidPage(
@@ -44,7 +48,8 @@ ui <- fluidPage(
                                   "Lafayette River at Mayflower Rd",
                                   "Mason Creek at Granby St"),
                       selected = "1",
-                      multiple = FALSE)
+                      multiple = FALSE,
+                      width= '250')
                       )
           # sliderInput("elev",
           #             "Tide Height (m)",
@@ -148,9 +153,17 @@ server <- function(input, output) {
       
       
       #now to make the leaflet proxy, which is needed because the map needs to update every slider input
-      leafletProxy("norfPlot") %>%
+      my_pal <- c(
+        "#0B2E59", 
+        "#3F8FCB", 
+        "#64A36F"  )
+      pal <- colorNumeric(
+        palette = my_pal,
+        domain = values(combined.elev.1),
+        na.color = "transparent")
+       leafletProxy("norfPlot") %>%
         clearImages() %>%
-        addRasterImage(combined.elev.1, opacity = 0.7)
+        addRasterImage(combined.elev.1, colors = pal, opacity = 0.5)
         
     })
     # ggplot()+
