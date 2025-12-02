@@ -21,9 +21,10 @@ tide.input.clean <- tide.input |>
   mutate(`Elizabeth River Main Branch at Nauticus`= NULL) |> 
   drop_na() |> 
   mutate(useful.date = as.POSIXct(LocalTime, format = "%Y %b %d %I:%M:%S %p")) |> 
-  mutate(Elizabeth.River <- (`Elizabeth River Eastern Branch at Grandy Village`*(1/3.28084))) |> 
-  mutate(Lafayette.River <- ( `Lafayette River at Mayflower Rd`*(1/3.28084))) |> 
-  mutate(Mason.Creek <- (`Mason Creek at Granby St`*(1/3.28084)))
+  mutate( `Elizabeth River Eastern Branch at Grandy Village` = (`Elizabeth River Eastern Branch at Grandy Village`*(1/3.28084))) |> 
+  mutate(`Lafayette River at Mayflower Rd` = ( `Lafayette River at Mayflower Rd`*(1/3.28084))) |> 
+  mutate(`Mason Creek at Granby St` = (`Mason Creek at Granby St`*(1/3.28084)))
+
 
 
 # Define UI for application that 
