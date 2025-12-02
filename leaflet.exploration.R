@@ -58,21 +58,21 @@ ui <- fluidPage(
           leafletOutput(outputId = "norfPlot"),
       #tiny panes
       conditionalPanel(condition = "input.sensor == 'Elizabeth River Eastern Branch at Grandy Village'",
-                       h3 = "flooding along Elizabeth River",
-                       plotOutput("elizaPlot"),
-                       conditionalPanel(
-                         condition = "input.sensor == 'Lafayette River at Mayflower Rd'",
-                         h3("Flooding along Lafayette River"),
-                         plotOutput("layfPlot")
-                       ),
-                       
-                       conditionalPanel(
-                         condition = "input.sensor == 'Mason Creek at Granby St'",
-                         h3("Flooding along Mason Creek"),
-                         plotOutput("masPlot")
-  
+                       h3("flooding along Elizabeth River"),
+                       leafletOutput("elizaPlot")
+      ),
+      conditionalPanel(
+        condition = "input.sensor == 'Lafayette River at Mayflower Rd'",
+        h3("Flooding along Lafayette River"),
+        leafletOutput("lafPlot")
+      ),
+      
+      conditionalPanel(
+        condition = "input.sensor == 'Mason Creek at Granby St'",
+        h3("Flooding along Mason Creek"),
+        leafletOutput("masPlot")
       )
-    ))))
+        )))
 
 #not running again, need to read all this shit in again!!!!#####
 unclean.norf.trimmed <- rast("Data/raster-small5.tif")
@@ -124,21 +124,175 @@ server <- function(input, output) {
     #making sub-plots
     output$elizaPlot <- renderLeaflet({
       leaflet() |> 
-        setView(center_lng[2], lat = center_lat[2], zoom = initial_zoom)
+        addProviderTiles(providers$CartoDB.Positron) |> 
+        setView(lng = center_lng[2], lat = center_lat[2], zoom = initial_zoom)
     })
     
-    output$layfPlot <- renderLeaflet({
+    output$lafPlot <- renderLeaflet({
       leaflet() |> 
-        setView(lng =center_lng[3], lat = center_lat[3], zoom = initial_zoom)
+        addProviderTiles(providers$CartoDB.Positron) |> 
+        setView(lng = center_lng[3], lat = center_lat[3], zoom = initial_zoom)
     })
     
     output$masPlot <- renderLeaflet({
       leaflet() |> 
-        setView(center_lng[4], lat = center_lat[4], zoom = initial_zoom)
+        addProviderTiles(providers$CartoDB.Positron) |> 
+        setView(lng = center_lng[4], lat = center_lat[4], zoom = initial_zoom)
+    })
+    observe({
+      withProgress(message = "plotting", {
+        
+        #determining height for gauge and time
+        gauge.height <- tide.input.clean |> 
+          select(useful.date, input$sensor) |> 
+          filter(useful.date == input$date) |> 
+          pull(input$sensor)
+        
+        
+        #getting the raster for that tide height 
+        unclean.norf.trimmed.filtered <- unclean.norf.trimmed
+        unclean.norf.trimmed.filtered[unclean.norf.trimmed.filtered >= gauge.height] <- NA
+        
+        #sets the elev set by user to the map I thinkkkkk/hopeeee
+        
+        
+        #now to make the patches
+        norf.patches.test <- patches(unclean.norf.trimmed.filtered, 
+                                     directions = 8, 
+                                     values = FALSE, 
+                                     zeroAsNA=FALSE)
+        
+        biggest.patch.elev.1 <- norf.patches.test
+        biggest.patch.elev.1[biggest.patch.elev.1 != 1] <- NA
+        
+        other.patches.elev.1 <- mask(norf.patches.test, biggest.patch.elev.1, inverse=TRUE)
+        
+        other.patches.elev.1.uniform <- other.patches.elev.1
+        other.patches.elev.1.uniform[!is.na(other.patches.elev.1.uniform)] <- 50
+        
+        combined.elev.1 <- merge(other.patches.elev.1.uniform, biggest.patch.elev.1)
+        combined.elev.1 <- merge(ocean.patch, combined.elev.1)
+        
+        
+        #now to make the leaflet proxy, which is needed because the map needs to update every slider input
+        my_pal <- c(
+          "#0B2E59", 
+          "#3F8FCB", 
+          "#64A36F"  )
+        pal <- colorNumeric(
+          palette = my_pal,
+          domain = values(combined.elev.1),
+          na.color = "transparent")
+        leafletProxy("elizaPlot") %>%
+          clearImages() %>%
+          addRasterImage(combined.elev.1, colors = pal, opacity = 0.5)
+        
+      })
+    })
+    
+    observe({
+      withProgress(message = "plotting", {
+        
+        #determining height for gauge and time
+        gauge.height <- tide.input.clean |> 
+          select(useful.date, input$sensor) |> 
+          filter(useful.date == input$date) |> 
+          pull(input$sensor)
+        
+        
+        #getting the raster for that tide height 
+        unclean.norf.trimmed.filtered <- unclean.norf.trimmed
+        unclean.norf.trimmed.filtered[unclean.norf.trimmed.filtered >= gauge.height] <- NA
+        
+        #sets the elev set by user to the map I thinkkkkk/hopeeee
+        
+        
+        #now to make the patches
+        norf.patches.test <- patches(unclean.norf.trimmed.filtered, 
+                                     directions = 8, 
+                                     values = FALSE, 
+                                     zeroAsNA=FALSE)
+        
+        biggest.patch.elev.1 <- norf.patches.test
+        biggest.patch.elev.1[biggest.patch.elev.1 != 1] <- NA
+        
+        other.patches.elev.1 <- mask(norf.patches.test, biggest.patch.elev.1, inverse=TRUE)
+        
+        other.patches.elev.1.uniform <- other.patches.elev.1
+        other.patches.elev.1.uniform[!is.na(other.patches.elev.1.uniform)] <- 50
+        
+        combined.elev.1 <- merge(other.patches.elev.1.uniform, biggest.patch.elev.1)
+        combined.elev.1 <- merge(ocean.patch, combined.elev.1)
+        
+        
+        #now to make the leaflet proxy, which is needed because the map needs to update every slider input
+        my_pal <- c(
+          "#0B2E59", 
+          "#3F8FCB", 
+          "#64A36F"  )
+        pal <- colorNumeric(
+          palette = my_pal,
+          domain = values(combined.elev.1),
+          na.color = "transparent")
+        leafletProxy("lafPlot") %>%
+          clearImages() %>%
+          addRasterImage(combined.elev.1, colors = pal, opacity = 0.5)
+        
+      })
+    })
+    observe({
+      withProgress(message = "plotting", {
+        
+        #determining height for gauge and time
+        gauge.height <- tide.input.clean |> 
+          select(useful.date, input$sensor) |> 
+          filter(useful.date == input$date) |> 
+          pull(input$sensor)
+        
+        
+        #getting the raster for that tide height 
+        unclean.norf.trimmed.filtered <- unclean.norf.trimmed
+        unclean.norf.trimmed.filtered[unclean.norf.trimmed.filtered >= gauge.height] <- NA
+        
+        #sets the elev set by user to the map I thinkkkkk/hopeeee
+        
+        
+        #now to make the patches
+        norf.patches.test <- patches(unclean.norf.trimmed.filtered, 
+                                     directions = 8, 
+                                     values = FALSE, 
+                                     zeroAsNA=FALSE)
+        
+        biggest.patch.elev.1 <- norf.patches.test
+        biggest.patch.elev.1[biggest.patch.elev.1 != 1] <- NA
+        
+        other.patches.elev.1 <- mask(norf.patches.test, biggest.patch.elev.1, inverse=TRUE)
+        
+        other.patches.elev.1.uniform <- other.patches.elev.1
+        other.patches.elev.1.uniform[!is.na(other.patches.elev.1.uniform)] <- 50
+        
+        combined.elev.1 <- merge(other.patches.elev.1.uniform, biggest.patch.elev.1)
+        combined.elev.1 <- merge(ocean.patch, combined.elev.1)
+        
+        
+        #now to make the leaflet proxy, which is needed because the map needs to update every slider input
+        my_pal <- c(
+          "#0B2E59", 
+          "#3F8FCB", 
+          "#64A36F"  )
+        pal <- colorNumeric(
+          palette = my_pal,
+          domain = values(combined.elev.1),
+          na.color = "transparent")
+        leafletProxy("masPlot") %>%
+          clearImages() %>%
+          addRasterImage(combined.elev.1, colors = pal, opacity = 0.5)
+        
+      })
     })
     
     
-
+    
       
       #apparently observe makes it update each time a value changes?
       observe({
@@ -190,21 +344,6 @@ server <- function(input, output) {
         addRasterImage(combined.elev.1, colors = pal, opacity = 0.5)
         
     })
-    # ggplot()+
-    #   geom_spatraster(data = combined.elev.1)+
-    #   scale_fill_gradient2(low = "darkblue", 
-    #                        high = "red",
-    #                        mid = "steelblue", 
-    #                        midpoint = 0, 
-    #                        na.value = "grey50")+
-    #   theme(
-    #     plot.background  = element_rect(fill = "white", color = NA),
-    #     panel.background = element_rect(fill = "white", color = NA)
-    #   )+
-        
-       
-
-        
     })
 }
 

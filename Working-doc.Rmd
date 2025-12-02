@@ -20,7 +20,7 @@ library(terra)
 
 #initial raster creation and organization
 unclean.norf <- rast("Data/VA_Southern_GCS_3m_NAVDm.tif")
-bbox <- ext(c(xmin = -76.389548, xmax = -76.256, ymin = 36.87, ymax = 36.971082))
+bbox <- ext(c(xmin = -76.389548, xmax = -76.256, ymin = 36.835001, ymax = 36.971082))
 unclean.norf.masked <- mask(unclean.norf, bbox)
 unclean.norf.trimmed <- trim(unclean.norf.masked)
 plot(unclean.norf.trimmed)
@@ -34,7 +34,7 @@ ggsave(filename = "norfolk-initial.png", path = "Plots/")
 
 #creating a one with less resolution for usein the app
   raster.small5 <- terra::aggregate(unclean.norf.trimmed, fact = 5)
-  plot(raster.small)
+  plot(raster.small5)
   writeRaster(raster.small5, "Data/raster-small5.tif", overwrite = TRUE)
   
   
