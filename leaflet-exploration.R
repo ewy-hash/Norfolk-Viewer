@@ -42,16 +42,14 @@ ui <- fluidPage(
                               value = min(tide.input.clean$useful.date),
                               step = 3600,
                               timeFormat = "%Y %b %d %H:%M:%S"), 
-                  sidebarPanel( #sliderInput(tide.input.clean, "Storm Surge")
                     selectInput(inputId = "sensor",
                                 label = "Sensor",
                                 choices = c("Elizabeth River Eastern Branch at Grandy Village", 
                                             "Lafayette River at Mayflower Rd",
                                             "Mason Creek at Granby St"),
-                                selected = "1",
-                                multiple = FALSE,
-                                width= '250%')
-                  )),
+                                #selected = "1",
+                                multiple = FALSE)
+                  ),
     # Show a plot of the data
     mainPanel(
       width = 8,
