@@ -16,7 +16,7 @@ library(terra)
 library(tigris)
 #install.packages("leaflet")
 library(leaflet)
-tide.input <- read_csv("deployable_data//Tide_Sensors_20251128.csv")
+tide.input <- read_csv("deployable data/Tide_Sensors_20251128.csv")
 tide.input.clean <- tide.input |> 
   mutate(`Little Creek at 20th Bay St`= NULL) |> 
   mutate(`Elizabeth River Main Branch at Nauticus`= NULL) |> 
@@ -30,7 +30,7 @@ tide.input.clean <- tide.input |>
 
 
 #not running again, need to read all this shit in again!!!!#####
-unclean.norf.trimmed <- rast("deployable_data/raster-small5.tif")
+unclean.norf.trimmed <- rast("deployable data/raster-small5.tif")
 unclean.norf.trimmed[is.na(unclean.norf.trimmed)] <- -99
 
 
@@ -41,7 +41,7 @@ ocean[ocean >= -90] <- NA
 
 #plot(mask(unclean.norf.trimmed, ocean, inverse = TRUE))
 
-ocean.patches <-patches(ocean)
+ocean.patches <- patches(ocean)
 ocean.patch <- ocean.patches
 ocean.patch[ocean.patch != 1] <- NA
 ocean.patch[ocean.patch == 1] <- -99
