@@ -123,12 +123,12 @@ ui <- fluidPage(
                               #selected = "1",
                               multiple = FALSE)),
    conditionalPanel(condition = "input.sensor == 'Elizabeth River Eastern Branch at Grandy Village'",
-                    h3("flooding along Elizabeth River"),
+                    h3("Flooding along the Elizabeth River"),
                     leafletOutput("elizaPlot")
    ),
    conditionalPanel(
      condition = "input.sensor == 'Lafayette River at Mayflower Rd'",
-     h3("Flooding along Lafayette River"),
+     h3("Flooding along the Lafayette River"),
      leafletOutput("lafPlot")
    ),
    
