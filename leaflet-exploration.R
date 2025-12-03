@@ -181,6 +181,36 @@ server <- function(input, output) {
   
   
 #REACTIVES ####
+  observeEvent(input$sensor, {
+    if (input$sensor == "Elizabeth River Eastern Branch at Grandy Village") {
+      withProgress(message = "plotting", {
+        
+        #determining height for gauge and time
+        gauge.height <- tide.input.clean |> 
+          select(useful.date, input$sensor) |> 
+          filter(useful.date == input$date) |> 
+          pull(input$sensor)
+        
+        
+        #getting the raster for that tide height 
+        computed.raster <- ComputeRaster(gauge.height)
+        
+        
+        #now to make the leaflet proxy, which is needed because the map needs to update every slider input
+        my_pal <- c(
+          "#0B2E59", 
+          "#3F8FCB", 
+          "#64A36F"  )
+        pal <- colorNumeric(
+          palette = my_pal,
+          domain = values(computed.raster),
+          na.color = "transparent")
+        leafletProxy("elizaPlot") %>%
+          clearImages() %>%
+          addRasterImage(computed.raster, colors = pal, opacity = 0.5)
+        
+      })
+    }})
   observeEvent(input$date, {
     if (input$sensor == "Elizabeth River Eastern Branch at Grandy Village") {
       withProgress(message = "plotting", {
@@ -213,6 +243,36 @@ server <- function(input, output) {
     }})
   
 
+  observeEvent(input$sensor, {
+    if (input$sensor == "Lafayette River at Mayflower Rd") {
+      withProgress(message = "plotting", {
+        
+        #determining height for gauge and time
+        gauge.height <- tide.input.clean |> 
+          select(useful.date, input$sensor) |> 
+          filter(useful.date == input$date) |> 
+          pull(input$sensor)
+        
+        
+        #getting the raster for that tide height 
+        computed.raster <- ComputeRaster(gauge.height)
+        
+        
+        #now to make the leaflet proxy, which is needed because the map needs to update every slider input
+        my_pal <- c(
+          "#0B2E59", 
+          "#3F8FCB", 
+          "#64A36F"  )
+        pal <- colorNumeric(
+          palette = my_pal,
+          domain = values(computed.raster),
+          na.color = "transparent")
+        leafletProxy("lafPlot") %>%
+          clearImages() %>%
+          addRasterImage(computed.raster, colors = pal, opacity = 0.5)
+        
+      })
+    }})
   observeEvent(input$date, {
     if (input$sensor == "Lafayette River at Mayflower Rd") {
       withProgress(message = "plotting", {
@@ -244,6 +304,36 @@ server <- function(input, output) {
       })
     }})
 
+  observeEvent(input$sensor, {
+    if (input$sensor == "Mason Creek at Granby St") {
+      withProgress(message = "plotting", {
+        
+        #determining height for gauge and time
+        gauge.height <- tide.input.clean |> 
+          select(useful.date, input$sensor) |> 
+          filter(useful.date == input$date) |> 
+          pull(input$sensor)
+        
+        
+        #getting the raster for that tide height 
+        computed.raster <- ComputeRaster(gauge.height)
+        
+        
+        #now to make the leaflet proxy, which is needed because the map needs to update every slider input
+        my_pal <- c(
+          "#0B2E59", 
+          "#3F8FCB", 
+          "#64A36F"  )
+        pal <- colorNumeric(
+          palette = my_pal,
+          domain = values(computed.raster),
+          na.color = "transparent")
+        leafletProxy("masPlot") %>%
+          clearImages() %>%
+          addRasterImage(computed.raster, colors = pal, opacity = 0.5)
+        
+      })
+    }})
   observeEvent(input$date, {
     if (input$sensor == "Mason Creek at Granby St") {
       withProgress(message = "plotting", {
