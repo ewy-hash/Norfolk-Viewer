@@ -93,7 +93,7 @@ ui <- fluidPage(
   # Application title
   titlePanel("Flood Hazard Map Norfolk"),
   
-  # Sidebar with a slider input for tide height 
+  # TOP panel, tide height, and norfplot
   sidebarLayout(
     sidebarPanel( sliderInput(inputId = "date", 
                               label = "Noreaster Surge",
@@ -102,22 +102,23 @@ ui <- fluidPage(
                               value = min(tide.input.clean$useful.date),
                               step = 3600,
                               timeFormat = "%Y %b %d %H:%M:%S"), 
-                  sliderInput(inputId = "elev", 
-                              label = "Tide Height in Feet",
-                              min = 0,
-                              max = 12,
-                              value = 0,
-                              step = .25,
-                              )),
-    sidebarPanel(
-                    selectInput(inputId = "sensor",
-                                label = "Sensor",
-                                choices = c("Elizabeth River Eastern Branch at Grandy Village", 
-                                            "Lafayette River at Mayflower Rd",
-                                            "Mason Creek at Granby St"),
-                                #selected = "1",
-                                multiple = FALSE))
+                  selectInput(inputId = "sensor",
+                              label = "Sensor",
+                              choices = c("Elizabeth River Eastern Branch at Grandy Village", 
+                                          "Lafayette River at Mayflower Rd",
+                                          "Mason Creek at Granby St"),
+                              #selected = "1",
+                              multiple = FALSE)
                   ),
+    sidebarPanel(
+      sliderInput(inputId = "elev", 
+                  label = "Tide Height in Feet",
+                  min = 0,
+                  max = 12,
+                  value = 0,
+                  step = .25,
+      ) )
+  ),
     # Show a plot of the data
     mainPanel(
       width = 8,
