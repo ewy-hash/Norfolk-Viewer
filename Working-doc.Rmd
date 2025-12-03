@@ -21,9 +21,11 @@ library(terra)
 #initial raster creation and organization
 unclean.norf <- rast("Data/VA_Southern_GCS_3m_NAVDm.tif")
 bbox <- ext(c(xmin = -76.58, xmax = -76.232, ymin = 36.826474, ymax = 36.971082))
-unclean.norf.masked <- mask(unclean.norf, bbox)
-unclean.norf.trimmed <- trim(unclean.norf.masked)
+
+unclean.norf.trimmed <- raster::crop(unclean.norf, bbox)
 plot(unclean.norf.trimmed)
+
+
 writeRaster(unclean.norf.trimmed, "Data//unclean-norf-trimmed.tif", overwrite = TRUE)
 ggplot()+
   geom_spatraster(data = unclean.norf.trimmed)
