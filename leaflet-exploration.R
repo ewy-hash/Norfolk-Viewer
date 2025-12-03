@@ -181,7 +181,7 @@ server <- function(input, output) {
   
   
 #REACTIVES ####
-  observeEvent(input$sensor, {
+  observeEvent(input$date, {
     if (input$sensor == "Elizabeth River Eastern Branch at Grandy Village") {
       withProgress(message = "plotting", {
         
@@ -213,7 +213,7 @@ server <- function(input, output) {
     }})
   
 
-  observeEvent(input$sensor, {
+  observeEvent(input$date, {
     if (input$sensor == "Lafayette River at Mayflower Rd") {
       withProgress(message = "plotting", {
         
@@ -244,7 +244,7 @@ server <- function(input, output) {
       })
     }})
 
-  observeEvent(input$sensor, {
+  observeEvent(input$date, {
     if (input$sensor == "Mason Creek at Granby St") {
       withProgress(message = "plotting", {
         
