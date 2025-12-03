@@ -6,6 +6,8 @@
 #
 #    https://shiny.posit.co/
 #
+#install.packages("rsconnect")
+library(rsconnect)
 library(shiny)
 library(tidyverse)
 library(tidyterra)
@@ -14,8 +16,7 @@ library(terra)
 library(tigris)
 #install.packages("leaflet")
 library(leaflet)
-library(shiny)
-tide.input <- read_csv("Data/Tide_Sensors_20251128.csv")
+tide.input <- read_csv("deployable data//Tide_Sensors_20251128.csv")
 tide.input.clean <- tide.input |> 
   mutate(`Little Creek at 20th Bay St`= NULL) |> 
   mutate(`Elizabeth River Main Branch at Nauticus`= NULL) |> 
@@ -29,7 +30,7 @@ tide.input.clean <- tide.input |>
 
 
 #not running again, need to read all this shit in again!!!!#####
-unclean.norf.trimmed <- rast("Data/raster-small5.tif")
+unclean.norf.trimmed <- rast("deployable data/raster-small5.tif")
 unclean.norf.trimmed[is.na(unclean.norf.trimmed)] <- -99
 
 
