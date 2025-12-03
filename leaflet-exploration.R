@@ -26,6 +26,66 @@ tide.input.clean <- tide.input |>
   mutate(`Mason Creek at Granby St` = (`Mason Creek at Granby St`*(1/3.28084)))
 
 
+
+
+#not running again, need to read all this shit in again!!!!#####
+unclean.norf.trimmed <- rast("Data/raster-small5.tif")
+unclean.norf.trimmed[is.na(unclean.norf.trimmed)] <- -99
+
+
+ocean <- unclean.norf.trimmed
+
+#there were some weird NA values in the top left corner that this fixes
+ocean[ocean >= -90] <- NA
+
+#plot(mask(unclean.norf.trimmed, ocean, inverse = TRUE))
+
+ocean.patches <-patches(ocean)
+ocean.patch <- ocean.patches
+ocean.patch[ocean.patch != 1] <- NA
+ocean.patch[ocean.patch == 1] <- -99
+
+
+#these are the road polygons to be added in
+# norfolk_roads <- roads(state = "VA", county = "Norfolk")
+# hampton_roads <- roads(state = "VA", county = "Hampton")
+# portsmouth_roads <- roads(state = "VA", county = "Portsmouth")
+#whole map = [1], elizabeth = [2], lafayette = [3], mason creek =[4] thought this would make easier??
+
+
+min_lng <- c(-76.389548, -76.334227, -76.33, -76.28)
+max_lat <- c(36.971082, 36.867939, 36.92, 36.949)
+max_lng <- c(-76.256, -76.256, -76.256, -76.256)
+min_lat <- c(36.87, 36.835001, 36.87, 36.923)
+
+center_lng <- (min_lng + max_lng) / 2
+center_lat <- (min_lat + max_lat) / 2
+initial_zoom <- 12.4999999
+
+#Function to compute elev####
+ComputeRaster <- function(elevation) {
+unclean.norf.trimmed.filtered <- unclean.norf.trimmed
+unclean.norf.trimmed.filtered[unclean.norf.trimmed.filtered >= elevation] <- NA
+#now to make the patches
+norf.patches.test <- patches(unclean.norf.trimmed.filtered, 
+                             directions = 8, 
+                             values = FALSE, 
+                             zeroAsNA=FALSE)
+
+biggest.patch <- norf.patches.test
+biggest.patch[biggest.patch != 1] <- NA
+
+other.patches <- mask(norf.patches.test, biggest.patch, inverse=TRUE)
+
+other.patches.uniform <- other.patches
+other.patches.uniform[!is.na(other.patches.uniform)] <- 50
+
+combined.elev <- merge(other.patches.uniform, biggest.patch)
+combined.elev <- merge(ocean.patch, combined.elev)
+combined.elev
+}
+
+
 #UI ####
 # Define UI for application 
 ui <- fluidPage(
@@ -42,6 +102,13 @@ ui <- fluidPage(
                               value = min(tide.input.clean$useful.date),
                               step = 3600,
                               timeFormat = "%Y %b %d %H:%M:%S"), 
+                  sliderInput(inputId = "elev", 
+                              label = "Tide Height",
+                              min = 0,
+                              max = 4,
+                              value = 0,
+                              step = .25,
+                              ),
                     selectInput(inputId = "sensor",
                                 label = "Sensor",
                                 choices = c("Elizabeth River Eastern Branch at Grandy Village", 
@@ -73,38 +140,6 @@ ui <- fluidPage(
     )))
 
 
-#IN BETWEEN STUFF ####
-
-#not running again, need to read all this shit in again!!!!#####
-unclean.norf.trimmed <- rast("Data/raster-small5.tif")
-unclean.norf.trimmed[is.na(unclean.norf.trimmed)] <- -99
-
-
-ocean <- unclean.norf.trimmed
-
-#there were some weird NA values in the top left corner that this fixes
-ocean[ocean >= -90] <- NA
-
-plot(mask(unclean.norf.trimmed, ocean, inverse = TRUE))
-ocean.patches <-patches(ocean)
-ocean.patch <- ocean.patches
-ocean.patch[ocean.patch != 1] <- NA
-ocean.patch[ocean.patch == 1] <- -99
-
-
-#these are the road polygons to be added in
-norfolk_roads <- roads(state = "VA", county = "Norfolk")
-hampton_roads <- roads(state = "VA", county = "Hampton")
-portsmouth_roads <- roads(state = "VA", county = "Portsmouth")
-#whole map = [1], elizabeth = [2], lafayette = [3], mason creek =[4] thought this would make easier??
-min_lng <- c(-76.389548, -76.334227, -76.33, -76.28)
-max_lat <- c(36.971082, 36.867939, 36.92, 36.949)
-max_lng <- c(-76.256, -76.256, -76.256, -76.256)
-min_lat <- c(36.87, 36.835001, 36.87, 36.923)
-
-center_lng <- (min_lng + max_lng) / 2
-center_lat <- (min_lat + max_lat) / 2
-initial_zoom <- 12.4999999
 
 
 #SERVER####
@@ -151,28 +186,7 @@ server <- function(input, output) {
       
       
       #getting the raster for that tide height 
-      unclean.norf.trimmed.filtered <- unclean.norf.trimmed
-      unclean.norf.trimmed.filtered[unclean.norf.trimmed.filtered >= gauge.height] <- NA
-      
-      #sets the elev set by user to the map I thinkkkkk/hopeeee
-      
-      
-      #now to make the patches
-      norf.patches.test <- patches(unclean.norf.trimmed.filtered, 
-                                   directions = 8, 
-                                   values = FALSE, 
-                                   zeroAsNA=FALSE)
-      
-      biggest.patch.elev.1 <- norf.patches.test
-      biggest.patch.elev.1[biggest.patch.elev.1 != 1] <- NA
-      
-      other.patches.elev.1 <- mask(norf.patches.test, biggest.patch.elev.1, inverse=TRUE)
-      
-      other.patches.elev.1.uniform <- other.patches.elev.1
-      other.patches.elev.1.uniform[!is.na(other.patches.elev.1.uniform)] <- 50
-      
-      combined.elev.1 <- merge(other.patches.elev.1.uniform, biggest.patch.elev.1)
-      combined.elev.1 <- merge(ocean.patch, combined.elev.1)
+      computed.raster <- ComputeRaster(gauge.height)
       
       
       #now to make the leaflet proxy, which is needed because the map needs to update every slider input
@@ -182,11 +196,11 @@ server <- function(input, output) {
         "#64A36F"  )
       pal <- colorNumeric(
         palette = my_pal,
-        domain = values(combined.elev.1),
+        domain = values(computed.raster),
         na.color = "transparent")
       leafletProxy("elizaPlot") %>%
         clearImages() %>%
-        addRasterImage(combined.elev.1, colors = pal, opacity = 0.5)
+        addRasterImage(computed.raster, colors = pal, opacity = 0.5)
       
     })
   })
@@ -202,30 +216,7 @@ server <- function(input, output) {
       
       
       #getting the raster for that tide height 
-      unclean.norf.trimmed.filtered <- unclean.norf.trimmed
-      unclean.norf.trimmed.filtered[unclean.norf.trimmed.filtered >= gauge.height] <- NA
-      
-      #sets the elev set by user to the map I thinkkkkk/hopeeee
-      
-      
-      #now to make the patches
-      norf.patches.test <- patches(unclean.norf.trimmed.filtered, 
-                                   directions = 8, 
-                                   values = FALSE, 
-                                   zeroAsNA=FALSE)
-      
-      biggest.patch.elev.1 <- norf.patches.test
-      biggest.patch.elev.1[biggest.patch.elev.1 != 1] <- NA
-      
-      other.patches.elev.1 <- mask(norf.patches.test, biggest.patch.elev.1, inverse=TRUE)
-      
-      other.patches.elev.1.uniform <- other.patches.elev.1
-      other.patches.elev.1.uniform[!is.na(other.patches.elev.1.uniform)] <- 50
-      
-      combined.elev.1 <- merge(other.patches.elev.1.uniform, biggest.patch.elev.1)
-      combined.elev.1 <- merge(ocean.patch, combined.elev.1)
-      
-      
+      computed.raster <- ComputeRaster(gauge.height)
       #now to make the leaflet proxy, which is needed because the map needs to update every slider input
       my_pal <- c(
         "#0B2E59", 
@@ -233,11 +224,11 @@ server <- function(input, output) {
         "#64A36F"  )
       pal <- colorNumeric(
         palette = my_pal,
-        domain = values(combined.elev.1),
+        domain = values(computed.raster),
         na.color = "transparent")
       leafletProxy("lafPlot") %>%
         clearImages() %>%
-        addRasterImage(combined.elev.1, colors = pal, opacity = 0.5)
+        addRasterImage(computed.raster, colors = pal, opacity = 0.5)
       
     })
   })
@@ -252,28 +243,7 @@ server <- function(input, output) {
       
       
       #getting the raster for that tide height 
-      unclean.norf.trimmed.filtered <- unclean.norf.trimmed
-      unclean.norf.trimmed.filtered[unclean.norf.trimmed.filtered >= gauge.height] <- NA
-      
-      #sets the elev set by user to the map I thinkkkkk/hopeeee
-      
-      
-      #now to make the patches
-      norf.patches.test <- patches(unclean.norf.trimmed.filtered, 
-                                   directions = 8, 
-                                   values = FALSE, 
-                                   zeroAsNA=FALSE)
-      
-      biggest.patch.elev.1 <- norf.patches.test
-      biggest.patch.elev.1[biggest.patch.elev.1 != 1] <- NA
-      
-      other.patches.elev.1 <- mask(norf.patches.test, biggest.patch.elev.1, inverse=TRUE)
-      
-      other.patches.elev.1.uniform <- other.patches.elev.1
-      other.patches.elev.1.uniform[!is.na(other.patches.elev.1.uniform)] <- 50
-      
-      combined.elev.1 <- merge(other.patches.elev.1.uniform, biggest.patch.elev.1)
-      combined.elev.1 <- merge(ocean.patch, combined.elev.1)
+      computed.raster <- ComputeRaster(gauge.height)
       
       
       #now to make the leaflet proxy, which is needed because the map needs to update every slider input
@@ -283,11 +253,11 @@ server <- function(input, output) {
         "#64A36F"  )
       pal <- colorNumeric(
         palette = my_pal,
-        domain = values(combined.elev.1),
+        domain = values(computed.raster),
         na.color = "transparent")
       leafletProxy("masPlot") %>%
         clearImages() %>%
-        addRasterImage(combined.elev.1, colors = pal, opacity = 0.5)
+        addRasterImage(computed.raster, colors = pal, opacity = 0.5)
       
     })
   })
@@ -299,36 +269,9 @@ server <- function(input, output) {
   observe({
     withProgress(message = "plotting", {
       
-      #determining height for gauge and time
-      gauge.height <- tide.input.clean |> 
-        select(useful.date, input$sensor) |> 
-        filter(useful.date == input$date) |> 
-        pull(input$sensor)
       
       
-      #getting the raster for that tide height 
-      unclean.norf.trimmed.filtered <- unclean.norf.trimmed
-      unclean.norf.trimmed.filtered[unclean.norf.trimmed.filtered >= gauge.height] <- NA
-      
-      #sets the elev set by user to the map I thinkkkkk/hopeeee
-      
-      
-      #now to make the patches
-      norf.patches.test <- patches(unclean.norf.trimmed.filtered, 
-                                   directions = 8, 
-                                   values = FALSE, 
-                                   zeroAsNA=FALSE)
-      
-      biggest.patch.elev.1 <- norf.patches.test
-      biggest.patch.elev.1[biggest.patch.elev.1 != 1] <- NA
-      
-      other.patches.elev.1 <- mask(norf.patches.test, biggest.patch.elev.1, inverse=TRUE)
-      
-      other.patches.elev.1.uniform <- other.patches.elev.1
-      other.patches.elev.1.uniform[!is.na(other.patches.elev.1.uniform)] <- 50
-      
-      combined.elev.1 <- merge(other.patches.elev.1.uniform, biggest.patch.elev.1)
-      combined.elev.1 <- merge(ocean.patch, combined.elev.1)
+      computed.raster <- ComputeRaster(input$elev)
       
       
       #now to make the leaflet proxy, which is needed because the map needs to update every slider input
@@ -338,11 +281,11 @@ server <- function(input, output) {
         "#64A36F"  )
       pal <- colorNumeric(
         palette = my_pal,
-        domain = values(combined.elev.1),
+        domain = values(computed.raster),
         na.color = "transparent")
       leafletProxy("norfPlot") %>%
         clearImages() %>%
-        addRasterImage(combined.elev.1, colors = pal, opacity = 0.5)
+        addRasterImage(computed.raster, colors = pal, opacity = 0.5)
       
     })
   })
