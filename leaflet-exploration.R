@@ -95,6 +95,18 @@ ui <- fluidPage(
   titlePanel("Flood Hazard Map Norfolk"),
   
   # TOP panel, tide height, and norfplot
+  fluidRow(
+    column(width = 6, 
+           offset = 1,
+           sliderInput(inputId = "elev", 
+                       label = "Tide Height in Feet",
+                       min = 0,
+                       max = 12,
+                       value = 0,
+                       step = .25,
+           )),
+    leafletOutput(outputId = "norfPlot")),
+
   fluidRow(column(width = 6, offset = 1,
    sliderInput(inputId = "date", 
                               label = "Noreaster Surge",
@@ -124,45 +136,9 @@ ui <- fluidPage(
      condition = "input.sensor == 'Mason Creek at Granby St'",
      h3("Flooding along Mason Creek"),
      leafletOutput("masPlot")
-   ),
-   fluidRow(
-     column(width = 6, 
-            offset = 1,
-     sliderInput(inputId = "elev", 
-                  label = "Tide Height in Feet",
-                  min = 0,
-                  max = 12,
-                  value = 0,
-                  step = .25,
-      )),
-     leafletOutput(outputId = "norfPlot"))
-  ),
-    # Show a plot of the data
-    # mainPanel(
-    #   width = 8,
-    #   leafletOutput(outputId = "norfPlot"),
-    #   #tiny panes
-    #   conditionalPanel(condition = "input.sensor == 'Elizabeth River Eastern Branch at Grandy Village'",
-    #                    h3("flooding along Elizabeth River"),
-    #                    leafletOutput("elizaPlot")
-    #   ),
-    #   conditionalPanel(
-    #     condition = "input.sensor == 'Lafayette River at Mayflower Rd'",
-    #     h3("Flooding along Lafayette River"),
-    #     leafletOutput("lafPlot")
-    #   ),
-    #   
-    #   conditionalPanel(
-    #     condition = "input.sensor == 'Mason Creek at Granby St'",
-    #     h3("Flooding along Mason Creek"),
-    #     leafletOutput("masPlot")
-    #   )
-    # )
-  )
-
-
-
-
+   )
+  
+   ))
 #SERVER####
 
 server <- function(input, output) {
