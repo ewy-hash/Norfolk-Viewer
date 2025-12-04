@@ -34,7 +34,7 @@ ggsave(filename = "norfolk-initial.png", path = "Plots/")
 
 
 #creating a one with less resolution for usein the app
-  raster.small5 <- terra::aggregate(unclean.norf.trimmed, fact = 5)
+  raster.small5 <- terra::aggregate(unclean.norf.trimmed, fact = 7)
   plot(raster.small5)
   writeRaster(raster.small5, "deployable data/raster-small5.tif", overwrite = TRUE)
   
