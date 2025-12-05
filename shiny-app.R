@@ -16,7 +16,7 @@ library(terra)
 library(tigris)
 #install.packages("leaflet")
 library(leaflet)
-tide.input <- read_csv("deployable data/Tide_Sensors_20251128.csv")
+tide.input <- read_csv("deployable-data/Tide_Sensors_20251128.csv")
 tide.input.clean <- tide.input |> 
   mutate(`Little Creek at 20th Bay St`= NULL) |> 
   mutate(`Elizabeth River Main Branch at Nauticus`= NULL) |> 
@@ -30,7 +30,7 @@ tide.input.clean <- tide.input |>
 
 
 #not running again, need to read all this shit in again!!!!#####
-unclean.norf.trimmed <- rast("deployable data/raster-small5.tif")
+unclean.norf.trimmed <- rast("deployable-data/raster-small5.tif")
 unclean.norf.trimmed[is.na(unclean.norf.trimmed)] <- -99
 
 
@@ -89,10 +89,13 @@ combined.elev
 
 #UI ####
 # Define UI for application 
-ui <- fluidPage(
+ui <- navbarPage("Flood Hazard Viewer Norfolk",
+  tabPanel("Overall View",
   
+  
+  fluidPage(
   # Application title
-  titlePanel("Flood Hazard Map Norfolk"),
+  titlePanel("View Flooded Areas by Tide Height"),
   
   # TOP panel, tide height, and norfplot
   fluidRow(
@@ -105,8 +108,10 @@ ui <- fluidPage(
                        value = 0,
                        step = .25,
            )),
-    leafletOutput(outputId = "norfPlot")),
+    leafletOutput(outputId = "norfPlot")))),
 
+  tabPanel("Sensor View",
+           fluidPage(
   fluidRow(column(width = 6, offset = 1,
    sliderInput(inputId = "date", 
                               label = "Noreaster Surge",
@@ -136,7 +141,7 @@ ui <- fluidPage(
      condition = "input.sensor == 'Mason Creek at Granby St'",
      h3("Flooding along Mason Creek"),
      leafletOutput("masPlot")
-   )
+   )))
   
    ))
 #SERVER####
