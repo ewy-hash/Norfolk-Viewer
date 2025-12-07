@@ -100,7 +100,7 @@ ui <- navbarPage("Flood Hazard Viewer Norfolk",
   
   fluidPage(
   # Application title
-  titlePanel("View Flooded Areas by Water Gauge Height"),
+  titlePanel("Norfolk Flood Hazard Viewer"),
   p(
     "Welcome to Norfolk's flood hazard viewer!", br(),
     "You can use this site to navigate how rising sea water levels and tides will transform this city.",
@@ -123,6 +123,12 @@ ui <- navbarPage("Flood Hazard Viewer Norfolk",
 
   tabPanel("Sensor View",
            fluidPage(
+             titlePanel("Mapping Flooding Events"),
+             p(
+             "Time Scale Viewer for October Noreaster event", br(),
+             "This pane serves as a demonstration of the crisis utility of this app, using a dataset pulled from a Noreaster flooding event in mid-October",
+             "Navigate to each site to see location specific flooding information, using flood data pulled from each gauge"
+           ),
   fluidRow(column(width = 6, offset = 1,
    sliderInput(inputId = "date", 
                               label = "Noreaster Surge",
