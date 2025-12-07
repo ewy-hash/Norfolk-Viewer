@@ -128,8 +128,8 @@ ui <- navbarPage("Flood Hazard Viewer Norfolk",
              titlePanel("Mapping Flooding Events"),
              p(
              "Time Scale Viewer for October Noreaster event", br(),
-             "This pane serves as a demonstration of the crisis utility of this app, using a dataset pulled from a Noreaster flooding event in mid-October",
-             "Navigate to each site to see location specific flooding information, using flood data pulled from each gauge"
+             "This pane serves as a demonstration of the crisis utility of this app, using a dataset pulled from a Noreaster flooding event in mid-October.",
+             "Navigate to each site and select a time using the slider to see location specific flooding information using data pulled every six minutes from each gauge."
            ),
   fluidRow(column(width = 6, offset = 1,
    sliderInput(inputId = "date", 
