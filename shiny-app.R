@@ -119,7 +119,7 @@ ui <- navbarPage("Flood Hazard Viewer Norfolk",
                        value = 0,
                        step = .25,
            )),
-    imageOutput("legend", width = "10px", height = "10x", inline = TRUE),
+    imageOutput("legend", width = "50px", height = "50px", inline = TRUE),
     leafletOutput(outputId = "norfPlot")))),
 
 
@@ -167,7 +167,7 @@ ui <- navbarPage("Flood Hazard Viewer Norfolk",
 
 server <- function(input, output) {
   output$legend <- renderImage({
-    list(src = "deployable-data/legend.png")
+    list(src = "deployable_data/legend.png")
   }, deleteFile = FALSE)
   
   
