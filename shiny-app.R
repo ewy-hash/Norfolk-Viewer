@@ -25,7 +25,11 @@ tide.input.clean <- tide.input |>
   mutate( `Elizabeth River Eastern Branch at Grandy Village` = (`Elizabeth River Eastern Branch at Grandy Village`*(1/3.28084))) |> 
   mutate(`Lafayette River at Mayflower Rd` = ( `Lafayette River at Mayflower Rd`*(1/3.28084))) |> 
   mutate(`Mason Creek at Granby St` = (`Mason Creek at Granby St`*(1/3.28084)))
-
+p(
+  "Welcome to Norfolk's flood hazard viewer!", br(),
+  "You can use this site to navigate how rising sea water levels and tides will transform this city.",
+  "Navigate to sensor view to view real flood gauge readings from sensors along the Elizabeth River, the Lafayette River and Mason Creek."
+)
 
 
 
@@ -56,8 +60,9 @@ ocean.patch[ocean.patch == 1] <- -99
 
 min_lng <- c(-76.389548, -76.334227, -76.33, -76.28)
 max_lat <- c(36.971082, 36.867939, 36.92, 36.949)
-max_lng <- c(-76.256, -76.256, -76.256, -76.256)
-min_lat <- c(36.87, 36.835001, 36.87, 36.923)
+max_lng <- c(-76.256, -76.25686953316985, -76.256, -76.256)
+min_lat <- c(36.87, 36.8335194986698, 36.87, 36.923)
+#36.8335194986698, -76.25686953316985
 
 center_lng <- (min_lng + max_lng) / 2
 center_lat <- (min_lat + max_lat) / 2
@@ -95,7 +100,13 @@ ui <- navbarPage("Flood Hazard Viewer Norfolk",
   
   fluidPage(
   # Application title
-  titlePanel("View Flooded Areas by Tide Height"),
+  titlePanel("View Flooded Areas by Water Gauge Height"),
+  p(
+    "Welcome to Norfolk's flood hazard viewer!", br(),
+    "You can use this site to navigate how rising sea water levels and tides will transform this city.",
+    "Navigate to sensor view to view real flood gauge readings from sensors along the Elizabeth River, the Lafayette River and Mason Creek."
+  ),
+  
   
   # TOP panel, tide height, and norfplot
   fluidRow(
