@@ -119,7 +119,9 @@ ui <- navbarPage("Flood Hazard Viewer Norfolk",
                        value = 0,
                        step = .25,
            )),
+    imageOutput("legend", width = "10px", height = "10x", inline = TRUE),
     leafletOutput(outputId = "norfPlot")))),
+
 
   tabPanel("Sensor View",
            fluidPage(
@@ -164,6 +166,10 @@ ui <- navbarPage("Flood Hazard Viewer Norfolk",
 #SERVER####
 
 server <- function(input, output) {
+  output$legend <- renderImage({
+    list(src = "deployable-data/legend.png")
+  }, deleteFile = FALSE)
+  
   
   output$norfPlot <- renderLeaflet({
     leaflet() |> 

@@ -2,7 +2,7 @@
 
 **Norfolk nuisance flood viewer**
 
-## Contributors: 
+## Contributors:
 
 Evan Wyers and Adam Akins
 
