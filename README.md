@@ -26,6 +26,8 @@ Repository: <https://github.com/ewy-hash/Norfolk-Viewer>
 
 Working Shiny App: <https://adam-akins.shinyapps.io/norfolk-viewer/>
 
+Final Report: <https://docs.google.com/document/d/1r7tmvPXRoK3BKSKV0dYcPTwmt1u1aJJFFhPIUwo9H3E/edit?usp=sharing>
+
 Final Report: 
 
 Link to DEM file used (to be placed in Data/: <https://coast.noaa.gov/htdata/raster2/elevation/SLR_viewer_DEM_6230/VA/VA_Southern_GCS_3m_NAVDm.tif>
