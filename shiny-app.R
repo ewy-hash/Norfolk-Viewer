@@ -103,8 +103,8 @@ ui <- navbarPage("Flood Hazard Viewer Norfolk",
   titlePanel("Norfolk Flood Hazard Viewer"),
   p(
     "Welcome to Norfolk's flood hazard viewer!", br(),
-    "You can use this site to navigate how rising sea water levels and tides will transform this city.",
-    "Navigate to sensor view to view real flood gauge readings from sensors along the Elizabeth River, the Lafayette River and Mason Creek."
+    "You can use this site to navigate how rising sea water levels and tides are transforming our city. Use the Tide Height slider to visualize the effects of a changing climate in your community",
+    "Navigate to Sensor View to explore real flood gauge readings from sensors along the Elizabeth River, the Lafayette River and Mason Creek. Elevation/DEM data courtesy of NOAA's Sea Level Rise Viewer Data Download."
   ),
   
   
@@ -119,17 +119,17 @@ ui <- navbarPage("Flood Hazard Viewer Norfolk",
                        value = 0,
                        step = .25,
            )),
-    imageOutput("legend", width = "50px", height = "50px", inline = TRUE),
+    imageOutput("legend_main", width = "50px", height = "50px", inline = TRUE),
     leafletOutput(outputId = "norfPlot")))),
 
 
   tabPanel("Sensor View",
            fluidPage(
-             titlePanel("Mapping Flooding Events"),
+             titlePanel("Live Flood Mapping"),
              p(
-             "Time Scale Viewer for October Noreaster event", br(),
-             "This pane serves as a demonstration of the crisis utility of this app, using a dataset pulled from a Noreaster flooding event in mid-October.",
-             "Navigate to each site and select a time using the slider to see location specific flooding information using data pulled every six minutes from each gauge."
+             "Mapping Nor'easter Surge", br(),
+             "This pane serves as a demonstration of the crisis utility of this app. This sample dataset is pulled from a Nor'easter flooding event in mid-October.",
+             "Navigate to each site and select a time using the slider to see location specific flooding information for the extent of the storm surge. Flooding data courtesy of the Norfolk Open Data Portal, elevation data via NOAA"
            ),
   fluidRow(column(width = 6, offset = 1,
    sliderInput(inputId = "date", 
@@ -146,6 +146,7 @@ ui <- navbarPage("Flood Hazard Viewer Norfolk",
                                           "Mason Creek at Granby St"),
                               #selected = "1",
                               multiple = FALSE)),
+   imageOutput("legend_sensor", width = "50px", height = "50px", inline = TRUE),
    conditionalPanel(condition = "input.sensor == 'Elizabeth River Eastern Branch at Grandy Village'",
                     h3("Flooding along the Elizabeth River"),
                     leafletOutput("elizaPlot")
@@ -166,8 +167,11 @@ ui <- navbarPage("Flood Hazard Viewer Norfolk",
 #SERVER####
 
 server <- function(input, output) {
-  output$legend <- renderImage({
-    list(src = "deployable_data/legend.png")
+  output$legend_main <- renderImage({
+    list(src = "deployable-data/legend.png")
+  }, deleteFile = FALSE)
+  output$legend_sensor <- renderImage({
+    list(src = "deployable-data/legend.png")
   }, deleteFile = FALSE)
   
   
